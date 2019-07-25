@@ -10,25 +10,21 @@ package fr.evaluation.loansimulator;
  */
 public class LoanAlgorithms {
 
-    /**
-     * Provides the total cost of a {@code Loan}, regarding is interest Rate,
-     * insurance Rate, amount and duration.
-     * 
-     * @param loan the given loan
-     * @return a total cost.
-     */
-    public static double getTotalCost(Loan loan) {
-	long duration = loan.getDuration();
-	double balance = loan.getAmount();
-	double cost = 0;
-	double amortizing = balance / duration;
-	while (duration != 0) {
-	    cost += balance * (loan.getInterestRate() + loan.getInsuranceRate())
-		    / 100;
-	    balance -= amortizing;
-	    duration--;
-	}
-	return cost;
+    private static double getMensuality(Loan loan) {
+	double amount = loan.getAmount();
+	long duration = loan.getDuration() * 12;
+	double rate = loan.getInterestRate() / 100;
+	double divided = amount * (rate / 12);
+	double divider = 1 - (Math.pow(1 + (rate / 12), (-duration)));
+	return divided / divider;
+    }
+
+    private static double getAnnuality(Loan loan) {
+	return getMensuality(loan) * 12;
+    }
+
+    public static double getYearInterest(Loan loan, double balance) {
+	return balance * loan.getInterestRate() / 100;
     }
 
     /**
@@ -41,6 +37,18 @@ public class LoanAlgorithms {
      * @return an annual payment.
      */
     public static double getAnnualPayments(Loan loan) {
-	return (loan.getAmount() + loan.getTotalCost()) / loan.getDuration();
+	return getAnnuality(loan) + getInsuranceAnnualCost(loan);
+    }
+
+    /**
+     * Retrieve annual insurance cost.
+     * <p>
+     * Insurance cost is calculated on the initial amount of the loan.
+     * 
+     * @param loan the given {@code Loan}
+     * @return an annual cost
+     */
+    public static double getInsuranceAnnualCost(Loan loan) {
+	return loan.getAmount() * loan.getInsuranceRate() / 100;
     }
 }

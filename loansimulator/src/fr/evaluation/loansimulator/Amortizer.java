@@ -19,7 +19,7 @@ public class Amortizer {
 
     private double currentBalance;
 
-    private int year;
+    private int duration;
 
     /**
      * Construct the Amortizer for a given {@code Loan}, with the given
@@ -32,24 +32,27 @@ public class Amortizer {
 	this.loan = loan;
 	this.startDate = startDate;
 	currentBalance = loan.getAmount();
-	year = 0;
+	duration = 0;
     }
 
     private String getYearInfo() {
 	int year = getYear();
-	double payments = loan.getPayments();
-	double interests = getInterestsCost();
-	double insurance = getInsuranceCost();
+	double payments = LoanAlgorithms.getAnnualPayments(loan);
+	double interests = LoanAlgorithms.getYearInterest(loan, currentBalance);
+	double insurance = LoanAlgorithms.getInsuranceAnnualCost(loan);
 	double totalCost = interests + insurance;
-	if (payments >= currentBalance) {
-	    payments = roundToTwoDecimal(currentBalance + totalCost);
+	if (payments >= currentBalance + totalCost) {
+	    payments = currentBalance + totalCost;
 	}
 	double amortizedAmount = roundToTwoDecimal(payments - totalCost);
 	currentBalance = roundToTwoDecimal(currentBalance - amortizedAmount);
-	String yearInfo = "year=" + year + ", amortized=" + amortizedAmount
-		+ ", interests=" + interests + ", remainingBalance="
-		+ currentBalance + ", payments=" + payments + ", insurance="
-		+ insurance + ", totalCost=" + totalCost;
+	String yearInfo = "year=" + year + ", amortized="
+		+ roundToTwoDecimal(amortizedAmount) + ", interests="
+		+ roundToTwoDecimal(interests) + ", remainingBalance="
+		+ roundToTwoDecimal(currentBalance) + ", payments="
+		+ roundToTwoDecimal(payments) + ", insurance="
+		+ roundToTwoDecimal(insurance) + ", totalCost="
+		+ roundToTwoDecimal(totalCost);
 	return yearInfo;
     }
 
@@ -63,23 +66,13 @@ public class Amortizer {
 	while (currentBalance > 0) {
 	    String info = getYearInfo();
 	    amortizationInformations.add(info);
-	    year++;
+	    duration++;
 	}
 	return Collections.unmodifiableList(amortizationInformations);
     }
 
-    private double getInterestsCost() {
-	double interests = currentBalance * (loan.getInterestRate() / 100);
-	return roundToTwoDecimal(interests);
-    }
-
-    private double getInsuranceCost() {
-	double insurance = currentBalance * (loan.getInsuranceRate() / 100);
-	return roundToTwoDecimal(insurance);
-    }
-
     private int getYear() {
-	return startDate.getYear() + year;
+	return startDate.getYear() + duration;
     }
 
     private double roundToTwoDecimal(double number) {

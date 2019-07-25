@@ -26,10 +26,6 @@ public class Loan {
 
     private double insuranceRate;
 
-    private double totalCost;
-
-    private double payments;
-
     /**
      * Construct a new loan, regarding user inputs.
      * 
@@ -46,8 +42,6 @@ public class Loan {
 	this.duration = duration;
 	this.interestRate = interestRate;
 	this.insuranceRate = insuranceRate;
-	totalCost = LoanAlgorithms.getTotalCost(this);
-	payments = LoanAlgorithms.getAnnualPayments(this);
     }
 
     /**
@@ -93,24 +87,6 @@ public class Loan {
      */
     public double getInsuranceRate() {
 	return insuranceRate;
-    }
-
-    /**
-     * Returns the total cost of a given {@code Loan}.
-     * 
-     * @return a total cost
-     */
-    public double getTotalCost() {
-	return totalCost;
-    }
-
-    /**
-     * Return the payments for a given {@code Loan}, expressed annually.
-     * 
-     * @return a amount to be paid
-     */
-    public double getPayments() {
-	return payments;
     }
 
     @Override

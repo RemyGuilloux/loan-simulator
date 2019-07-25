@@ -27,8 +27,10 @@ public class Simulator {
      */
     public static void run() {
 	initializeScanner();
-	Loan loan = buildLoan();
-	Amortizer amortizer = buildAmortizer(loan);
+	// Loan loan = buildLoan();
+	// Amortizer amortizer = buildAmortizer(loan);
+	Loan loan = new Loan(3000, LoanType.ESTATE, 3, 2, 2);
+	Amortizer amortizer = new Amortizer(loan, LocalDate.now());
 	List<String> amortizations = amortizer.amortize();
 	Display(amortizations);
 	closeScanner();
