@@ -80,7 +80,7 @@ public class Simulator {
     private static LoanType scanLoanType() {
 	LoanType loanType = null;
 	try {
-	    int typeIndex = (int) Math.floor(scanNumber());
+	    int typeIndex = (int) (Math.floor(scanNumber()) - 1);
 	    loanType = types[typeIndex];
 	} catch (ArrayIndexOutOfBoundsException
 		| InputMismatchException exception) {
