@@ -7,5 +7,16 @@ package fr.evaluation.loansimulator;
  * @author Thierry VILLEPREUX
  */
 public enum LoanType {
-    ESTATE, CAR, WORKS;
+    /**
+     * a loan a real estate operation
+     */
+    ESTATE,
+    /**
+     * a loan to buy a vehicle
+     */
+    CAR,
+    /**
+     * a loan to do works (like building works).
+     */
+    WORKS;
 }

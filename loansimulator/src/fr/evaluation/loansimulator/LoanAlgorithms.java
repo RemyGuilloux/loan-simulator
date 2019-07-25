@@ -23,6 +23,13 @@ public class LoanAlgorithms {
 	return getMensuality(loan) * 12;
     }
 
+    /**
+     * Returns the amount of interests paid in one year regarding the balance.
+     * 
+     * @param loan the given {@code Loan}
+     * @param balance the amount to be paid
+     * @return the amount of interests.
+     */
     public static double getYearInterest(Loan loan, double balance) {
 	return balance * loan.getInterestRate() / 100;
     }
