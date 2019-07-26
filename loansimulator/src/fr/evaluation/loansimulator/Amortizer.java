@@ -19,7 +19,9 @@ public class Amortizer {
 
     private double currentBalance;
 
-    private int currentYear;
+    private int currentOccurrence;
+
+    private int period;
 
     /**
      * Construct the Amortizer for a given {@code Loan}, with the given
@@ -27,36 +29,27 @@ public class Amortizer {
      * 
      * @param loan the given {@code Loan} to amortize
      * @param startDate the starting date of the {@code Loan}
+     * @param period the period between 2 payments
      */
-    public Amortizer(Loan loan, LocalDate startDate) {
+    public Amortizer(Loan loan, LocalDate startDate, int period) {
 	this.loan = loan;
 	this.startDate = startDate;
+	this.period = period;
 	currentBalance = loan.getAmount();
-	currentYear = (int) loan.getDuration();
+	currentOccurrence = 0;
     }
 
-    private String getYearInfo() {
-	int year = getYear();
-	double payments = LoanAlgorithms.getAnnualPayments(loan);
-	if (loan.getDuration() == 1) {
-	    payments = payments + currentBalance;
+    private Amortization getInfo() {
+	Amortization amortization;
+	if (period == 1) {
+	    amortization = new MonthlyAmortization();
+	} else {
+	    amortization = new AnnualAmortization();
 	}
-	double interests = LoanAlgorithms.getYearInterest(loan, currentBalance);
-	double insurance = LoanAlgorithms.getInsuranceAnnualCost(loan);
-	double totalCost = interests + insurance;
-	if (payments >= currentBalance + totalCost) {
-	    payments = currentBalance + totalCost;
-	}
-	double amortizedAmount = roundToTwoDecimal(payments - totalCost);
-	currentBalance = roundToTwoDecimal(currentBalance - amortizedAmount);
-	String yearInfo = "year=" + year + ", amortized="
-		+ roundToTwoDecimal(amortizedAmount) + ", interests="
-		+ roundToTwoDecimal(interests) + ", remainingBalance="
-		+ roundToTwoDecimal(currentBalance) + ", payments="
-		+ roundToTwoDecimal(payments) + ", insurance="
-		+ roundToTwoDecimal(insurance) + ", totalCost="
-		+ roundToTwoDecimal(totalCost);
-	return yearInfo;
+	amortization.getInfo(loan, currentBalance, startDate,
+		currentOccurrence);
+	currentBalance = amortization.getRemainingBalance();
+	return amortization;
     }
 
     /**
@@ -64,21 +57,13 @@ public class Amortizer {
      * 
      * @return a list of amortization informations
      */
-    public List<String> amortize() {
-	List<String> amortizationInformations = new ArrayList<>();
-	while (currentBalance != 0) {
-	    String info = getYearInfo();
+    public List<Amortization> amortize() {
+	List<Amortization> amortizationInformations = new ArrayList<>();
+	while (currentBalance > 0) {
+	    Amortization info = getInfo();
 	    amortizationInformations.add(info);
-	    currentYear++;
+	    currentOccurrence++;
 	}
 	return Collections.unmodifiableList(amortizationInformations);
-    }
-
-    private int getYear() {
-	return startDate.getYear() + currentYear;
-    }
-
-    private double roundToTwoDecimal(double number) {
-	return Math.round(number * 100) / 100d;
     }
 }

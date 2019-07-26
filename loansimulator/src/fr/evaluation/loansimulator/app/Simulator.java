@@ -5,6 +5,7 @@ import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
+import fr.evaluation.loansimulator.Amortization;
 import fr.evaluation.loansimulator.Amortizer;
 import fr.evaluation.loansimulator.Loan;
 import fr.evaluation.loansimulator.LoanType;
@@ -22,6 +23,8 @@ public class Simulator {
 
     private static LoanType[] types = LoanType.values();
 
+    private static int period;
+
     /**
      * Runs the application.
      */
@@ -29,13 +32,13 @@ public class Simulator {
 	initializeScanner();
 	Loan loan = buildLoan();
 	Amortizer amortizer = buildAmortizer(loan);
-	List<String> amortizations = amortizer.amortize();
+	List<Amortization> amortizations = amortizer.amortize();
 	Display(amortizations);
 	closeScanner();
     }
 
-    private static void Display(List<String> amortizations) {
-	for (String amortization : amortizations) {
+    private static void Display(List<Amortization> amortizations) {
+	for (Amortization amortization : amortizations) {
 	    System.out.println(amortization);
 	}
     }
@@ -54,7 +57,10 @@ public class Simulator {
 	System.out.println(
 		"Please select a type : 1 - Estate, 2 - Car 3 - Works");
 	LoanType type = scanLoanType();
-	System.out.println("Please select the duration in years : ");
+	System.out.println(
+		"do you want to express duration in   1 - month   -  2 year ?");
+	period = (int) scanNumber();
+	System.out.println("Please select the duration : ");
 	int duration = (int) Math.floor(scanNumber());
 	System.out.println("Please type the interest rate : ");
 	double interestRate = scanNumber();
@@ -101,6 +107,6 @@ public class Simulator {
 	int month = Integer.valueOf(dates[1]);
 	int day = Integer.valueOf(dates[0]);
 	LocalDate startDate = LocalDate.of(year, month, day);
-	return new Amortizer(loan, startDate);
+	return new Amortizer(loan, startDate, period);
     }
 }
