@@ -19,7 +19,7 @@ public class Amortizer {
 
     private double currentBalance;
 
-    private int duration;
+    private int currentYear;
 
     /**
      * Construct the Amortizer for a given {@code Loan}, with the given
@@ -32,12 +32,15 @@ public class Amortizer {
 	this.loan = loan;
 	this.startDate = startDate;
 	currentBalance = loan.getAmount();
-	duration = 0;
+	currentYear = (int) loan.getDuration();
     }
 
     private String getYearInfo() {
 	int year = getYear();
 	double payments = LoanAlgorithms.getAnnualPayments(loan);
+	if (loan.getDuration() == 1) {
+	    payments = payments + currentBalance;
+	}
 	double interests = LoanAlgorithms.getYearInterest(loan, currentBalance);
 	double insurance = LoanAlgorithms.getInsuranceAnnualCost(loan);
 	double totalCost = interests + insurance;
@@ -63,16 +66,16 @@ public class Amortizer {
      */
     public List<String> amortize() {
 	List<String> amortizationInformations = new ArrayList<>();
-	while (currentBalance > 0) {
+	while (currentBalance != 0) {
 	    String info = getYearInfo();
 	    amortizationInformations.add(info);
-	    duration++;
+	    currentYear++;
 	}
 	return Collections.unmodifiableList(amortizationInformations);
     }
 
     private int getYear() {
-	return startDate.getYear() + duration;
+	return startDate.getYear() + currentYear;
     }
 
     private double roundToTwoDecimal(double number) {
